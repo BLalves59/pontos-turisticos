@@ -1,0 +1,64 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: linear-gradient(to bottom, #e0e0e0, #b0b0b0);
+  padding: 20px;
+  box-sizing: border-box;
+  padding-top: 40px; /* Ajuste de espaçamento */
+}
+
+.titulo {
+  font-size: 86px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: -20px; /* Reduzindo espaço abaixo do título */
+  color: black;
+}
+
+.subtitulo {
+  font-size: 28px;
+  color: #555;
+  text-align: center;
+  margin-top: 0px;  /* Remove qualquer espaço extra acima */
+  margin-bottom: 10px; /* Mantém um pequeno espaço abaixo */
+}
+
+
+
+.cards-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* Permite que os cards quebrem a linha se a tela for pequena */
+  gap: 20px;
+  width: 80%;
+}
+
+/* Barra de pesquisa */
+.search-bar {
+  width: 60%;
+  max-width: 400px;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid black;
+  border-radius: 20px;
+  outline: none;
+  text-align: center;
+  margin-bottom: 20px;
+  background-color: #fff; /* Fundo branco */
+  color: #333; /* Texto escuro */
+  transition: all 0.3s ease-in-out;
+}
+
+.search-bar:focus {
+  /* border-color: #555; */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar::placeholder {
+  color: #888; /* Cor do placeholder mais suave */
+}
+

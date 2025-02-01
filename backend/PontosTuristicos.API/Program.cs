@@ -17,7 +17,24 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Pontos Turisticos API", Version = "v1" });
 });
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
+
+// Habilitar CORS
+app.UseCors(MyAllowSpecificOrigins);
+
 
 // Configuração do Swagger para ambiente de desenvolvimento
 if (app.Environment.IsDevelopment())

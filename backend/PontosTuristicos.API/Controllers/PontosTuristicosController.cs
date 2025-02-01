@@ -16,13 +16,13 @@ namespace PontosTuristicos.API.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet] //LISTAR
         public async Task<ActionResult<IEnumerable<PontoTuristico>>> GetPontosTuristicos()
         {
             return await _context.PontosTuristicos.ToListAsync();
         }
 
-        [HttpPost]
+        [HttpPost] //ADICIONAR
         public async Task<ActionResult<PontoTuristico>> PostPontoTuristico(PontoTuristico ponto)
         {
             _context.PontosTuristicos.Add(ponto);
@@ -30,7 +30,7 @@ namespace PontosTuristicos.API.Controllers
             return CreatedAtAction(nameof(GetPontosTuristicos), new { id = ponto.Id }, ponto);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}")] //EDITAR
         public async Task<IActionResult> PutPontoTuristico(int id, PontoTuristico ponto)
         {
             if (id != ponto.Id)
@@ -57,7 +57,7 @@ namespace PontosTuristicos.API.Controllers
             return Ok(pontoExistente);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}")] //DELETAR
         public async Task<IActionResult> DeletePontoTuristico(int id)
         {
             var ponto = await _context.PontosTuristicos.FindAsync(id);
