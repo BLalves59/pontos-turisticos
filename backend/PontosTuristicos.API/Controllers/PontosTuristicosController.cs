@@ -17,9 +17,26 @@ namespace PontosTuristicos.API.Controllers
         }
 
         [HttpGet] //LISTAR
-        public async Task<ActionResult<IEnumerable<PontoTuristico>>> GetPontosTuristicos()
+        public async Task<ActionResult<IEnumerable<PontoTuristico>>> GetPontosTuristicos(
+            int page = 1, int pageSize = 10)
         {
-            return await _context.PontosTuristicos.ToListAsync();
+            var query = _context.PontosTuristicos.OrderByDescending(p => p.Id);
+
+            var totalItems = await query.CountAsync(); //Total de registros
+
+            var pontosTuristicos = await query
+                .Skip((page - 1) * pageSize) //Pular páginas anteriores
+                .Take(pageSize) //Pegar somente os itens da página
+                .ToListAsync();
+
+            return Ok(new
+            {
+                TotalItems = totalItems,
+                Page = page,
+                PageSize = pageSize,
+                TotalPaginas = (int)Math.Ceiling((double)totalItems / pageSize),
+                Data = pontosTuristicos
+            });
         }
 
         [HttpPost] //ADICIONAR
@@ -30,7 +47,7 @@ namespace PontosTuristicos.API.Controllers
             return CreatedAtAction(nameof(GetPontosTuristicos), new { id = ponto.Id }, ponto);
         }
 
-        [HttpPut("{id}")] //EDITAR
+        [HttpPut("{id}")] //EDITAR - não será utilizada
         public async Task<IActionResult> PutPontoTuristico(int id, PontoTuristico ponto)
         {
             if (id != ponto.Id)
@@ -57,7 +74,7 @@ namespace PontosTuristicos.API.Controllers
             return Ok(pontoExistente);
         }
 
-        [HttpDelete("{id}")] //DELETAR
+        [HttpDelete("{id}")] //DELETAR - não será utilizada
         public async Task<IActionResult> DeletePontoTuristico(int id)
         {
             var ponto = await _context.PontosTuristicos.FindAsync(id);
