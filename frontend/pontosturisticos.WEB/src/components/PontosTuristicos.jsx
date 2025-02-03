@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import CardPontoTuristico from "./CardPontoTuristico";
 import "../styles/PontosTuristicos.css";
+import ModalCadastro from "./ModalCadastro";
 
 const PontosTuristicos = () => {
   const [pontos, setPontos] = useState([]); // Estado para armazenar os pontos turísticos
   const [pesquisa, setPesquisa] = useState(""); //Armazena o que for pesquisado
   const [pagina, setPagina] = useState(1); //Pagina atual
   const [totalPaginas, setTotalPaginas] = useState(1); //Total de paginas
+  const [mostrarModal, setMostrarModal] = useState(false);
   const itensPaginas = 8; //Número de itens por pagina
 
 
@@ -17,7 +19,7 @@ const PontosTuristicos = () => {
   }, [pagina]);
 
   const buscarPontos = () => {
-    api.get(`/PontosTuristicos?page=${Number(pagina)}&pageSize=${Number(itensPaginas)}`) //Requisição GET para buscar os pontos turísticos com paginação
+    api.get(`/PontosTuristicos?page=${pagina}&pageSize=${itensPaginas}&pesquisa=${pesquisa}`) //Requisição GET para buscar os pontos turísticos com paginação
     .then((response) => {
       console.log("Dados recebidos da API:", response.data);
       setPontos(response.data.data); //Atualiza o estado com os dados recebidos
@@ -28,43 +30,64 @@ const PontosTuristicos = () => {
     });
   }
 
-
-
+  //Tdetectar a tecla enter e ativar a busca
+  const ativarBusca = (evento) => {
+    if (evento.key === "Enter") {
+      evento.preventDefault(); // Evita a recarga da página (comportamento padrão)
+      buscarPontos(evento.target.value); // Usa o valor mais atualizado do input
+    }
+  };
 
   console.log("Pontos turísticos a serem exibidos:", pontos); 
+
   return (
     <div className="container">
       <h2 className="titulo">Pontos Turísticos</h2>
       <p className="subtitulo">Confira o melhor guia para sua viagem</p>
 
       {/*BARRA DE PESQUISA */}
-      <input
-        type="text"
-        className="search-bar"
-        placeholder="Buscar pontos turísticos..."
-        value={pesquisa} //valor digitado armazenado
-        onChange={(e) => setPesquisa(e.target.value)} //atualiza o estado
-      />
+      <div className="topo">
+        <div className="container-busca">
+          <input
+            type="text"
+            className="barraPesquisa"
+            placeholder="Buscar pontos turísticos..."
+            value={pesquisa}
+            onChange={(e) => setPesquisa(e.target.value)}
+            onKeyDown={ativarBusca}
+          />
+          <button className="botao-adicionar" onClick={() => setMostrarModal(true)}>
+            Adicionar +
+          </button>
+          <div>
+            {mostrarModal && <ModalCadastro fecharModal={() => setMostrarModal(false)} atualizarLista={buscarPontos} />}
+          </div>
+        </div>
+      </div>
+
 
       <div className="cards-container">
-        {pontos.map((ponto) => (
-          <CardPontoTuristico
-            key={ponto.id}
-            nome={ponto.nome}
-            cidade={ponto.cidade}
-            estado={ponto.estado}
-            imagem={`/${ponto.nome.toLowerCase().replace(/\s+/g, "-")}.jpg`}
-          />
-        ))}
+        {pontos.length > 0 ? (
+          pontos.map((ponto) => (
+            <CardPontoTuristico
+              key={ponto.id}
+              nome={ponto.nome}
+              cidade={ponto.cidade}
+              estado={ponto.estado}
+              imagem={`/${ponto.nome.toLowerCase().replace(/\s+/g, "-")}.jpg`}
+            />
+          ))) : (
+            <p>Nenhum resultado encontrado</p>
+          )}
       </div>
 
 
       {/* BOTÕES DE PAGINAÇÃO */}
-      <div className="pagination">
+      <div className="proximaPagina">
         <button onClick={() => setPagina(pagina - 1)} disabled={pagina === 1}>
           Anterior
         </button>
-        <span>
+        <span className="pagina">
           Página {pagina} de {totalPaginas}
         </span>
         <button onClick={() => setPagina(pagina + 1)} disabled={pagina === totalPaginas}>

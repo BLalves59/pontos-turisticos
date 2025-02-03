@@ -18,9 +18,21 @@ namespace PontosTuristicos.API.Controllers
 
         [HttpGet] //LISTAR
         public async Task<ActionResult<IEnumerable<PontoTuristico>>> GetPontosTuristicos(
-            int page = 1, int pageSize = 10)
+            string? pesquisa = null, int page = 1, int pageSize = 10)
+
         {
-            var query = _context.PontosTuristicos.OrderByDescending(p => p.Id);
+            var query = _context.PontosTuristicos.AsQueryable();
+
+            //Filtro para pesquisa
+            if (!string.IsNullOrEmpty(pesquisa))
+            {
+                query = query.Where(p =>
+                    p.Nome.Contains(pesquisa) ||
+                    p.Descricao.Contains(pesquisa) ||
+                    p.Localizacao.Contains(pesquisa));
+            }
+
+            query = query.OrderByDescending(p => p.DataInclusao);
 
             var totalItems = await query.CountAsync(); //Total de registros
 
@@ -88,6 +100,48 @@ namespace PontosTuristicos.API.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("upload")] //vai fazer o salvamento da foto na pasta public (teste)[HttpPost("upload")]
+        public async Task<IActionResult> UploadImagem([FromForm] IFormFile arquivo, [FromForm] string nome)
+        {
+            if (arquivo == null || arquivo.Length == 0 || string.IsNullOrWhiteSpace(nome))
+            {
+                return BadRequest(new { erro = "Imagem e nome são obrigatórios." });
+            }
+
+            // **Corrigir caminho para garantir que sai do backend**
+            // var caminhoBackend = Directory.GetCurrentDirectory(); // Obtém o caminho do backend
+            var caminhoPastaPublic = Path.GetFullPath(Path.Combine( ".." ,"..", "frontend", "pontosturisticos.WEB", "public"));
+
+            // Criar pasta public se não existir
+            if (!Directory.Exists(caminhoPastaPublic))
+            {
+                Directory.CreateDirectory(caminhoPastaPublic);
+            }
+
+            // **Salvar a imagem com o mesmo nome do ponto turístico + ".jpg"**
+            var nomeArquivo = $"{nome.ToLower().Replace(" ", "-")}.jpg"; 
+            var caminhoCompleto = Path.Combine(caminhoPastaPublic, nomeArquivo);
+
+            Console.WriteLine($"📁 Tentando salvar imagem como: {caminhoCompleto}");
+
+            try
+            {
+                using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
+                {
+                    await arquivo.CopyToAsync(stream);
+                }
+
+                Console.WriteLine($"✅ Imagem salva com sucesso: {caminhoCompleto}");
+                return Ok(new { caminho = $"/{nomeArquivo}" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao salvar imagem: {ex.Message}");
+                return StatusCode(500, new { erro = $"Erro ao salvar a imagem: {ex.Message}" });
+            }
+        }
+
 
 
     }

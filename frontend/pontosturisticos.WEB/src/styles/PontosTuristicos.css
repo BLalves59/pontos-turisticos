@@ -56,26 +56,62 @@
   }
 }
 
+.proximaPagina {
+  /* display: flex; */
+  align-items: center;
+  justify-content: center;
+  gap: 15px; /* Adiciona espaçamento entre os elementos */
+}
+
+.pagina {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+}
+
 /* Barra de Pesquisa */
-.search-bar {
-  width: 40%;
+.barraPesquisa {
+  width: 400px; /* Define um tamanho fixo para evitar desalinhamento */
   padding: 12px;
   font-size: 18px;
   border: 2px solid black;
   border-radius: 25px;
   text-align: center;
   outline: none;
-  margin-bottom: 30px; /* Define espaço entre a barra e os cards */
   background-color: white;
   color: black;
 }
 
-.search-bar:focus {
+.barraPesquisa:focus {
   /* border-color: #555; */
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-.search-bar::placeholder {
+.barraPesquisa::placeholder {
   color: #888; /* Cor do placeholder mais suave */
 }
 
+/* Botão adicionar */
+.botao-adicionar {
+  margin-top: 0px;
+  padding: 12px 20px;
+  font-size: 18px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  white-space: nowrap; /* Evita quebra de linha no botão */
+}
+
+.botao-adicionar:hover {
+  background-color: #444;
+}
+
+
+.container-busca {
+  display: flex;
+  align-items: center; /* Mantém os itens alinhados verticalmente */
+  gap: 10px; /* Espaço entre a barra e o botão */
+}
